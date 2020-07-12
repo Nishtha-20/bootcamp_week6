@@ -1,0 +1,38 @@
+class Solution {
+    class BinaryIndexedTree {
+        int[] ft;        
+        BinaryIndexedTree(int n) {
+            ft = new int[n];
+        }        
+        int rangeSum(int r) {
+            int sum = 0;
+            for(; r > 0; r -= (r & (-r))) {
+                sum += ft[r];
+            }
+            return sum;
+        }        
+        void update(int k, int v) {
+            for(; k < ft.length; k += (k & (-k))) {
+                ft[k] += v;
+            }
+        }
+    }
+    public int[] processQueries(int[] queries, int m) {
+        BinaryIndexedTree bit = new BinaryIndexedTree(m * 2 + 1);
+        int[] map = new int[m + 1];
+        for(int i = 1; i <= m; i++) {
+            map[i] = m + i;
+        }
+        for(int i = 1; i <= m; i++) {
+            bit.update(m + i, 1);
+        }
+        int[] ans = new int[queries.length];
+        for(int i = 0; i < queries.length; i++) {
+            ans[i] = bit.rangeSum(map[queries[i]] - 1);
+            bit.update(map[queries[i]], -1);
+            map[queries[i]] = m - i;
+            bit.update(map[queries[i]], 1);
+        }
+        return ans;
+    }
+}
